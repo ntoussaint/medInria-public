@@ -534,6 +534,16 @@ void vtkImageView::SetCurrentPoint (double pos[3])
   this->CurrentPoint[1] = inside_pos[1];
   this->CurrentPoint[2] = inside_pos[2];
   this->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+}
+
+void vtkImageView::UpdateCursorPosition (double pos[3])
+{
+  double inside_pos[3];
+  this->GetWithinBoundsPosition (pos, inside_pos);
+
+  this->CursorPosition[0] = inside_pos[0];
+  this->CursorPosition[1] = inside_pos[1];
+  this->CursorPosition[2] = inside_pos[2];
   this->Modified();
 }
 
@@ -1486,6 +1496,10 @@ void vtkImageView::AddLayer(int layer)
 //----------------------------------------------------------------------------
 void vtkImageView::RemoveLayer(int layer)
 {
+    if( layer < (int)(this->ITKInputVector.size()) )
+    {
+        this->ITKInputVector.erase(this->ITKInputVector.begin() + layer);
+    }
 }
 
 //----------------------------------------------------------------------------

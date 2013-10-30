@@ -39,6 +39,8 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
 
 ## #################################################################
 ## Input
@@ -75,10 +77,11 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
-  dtkCore dtkLog)
+  dtkCore 
+  dtkLog
+  ITKTensor)
 
 # Group common files together in Visual Studio.
 source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)

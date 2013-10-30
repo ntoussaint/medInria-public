@@ -462,14 +462,7 @@ void medAbstractDatabaseImporter::importData()
  
 
     // Check if PATIENT/STUDY/SERIES already exists in the database
-    bool dataExists = isPartialImportAttempt(d->data);
-
-    if ( dataExists )
-    {
-        qDebug() << "data is already in the database, skipping";
-        emit failure ( this );
-        return;
-    }
+    isPartialImportAttempt(d->data);
      
     bool writeSuccess = true;
     QString     thumb_dir;
@@ -799,12 +792,14 @@ dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( co
 
     if ( dataReader )
     {
+        bool readSuccessful = false;
         if ( readOnlyImageInformation )
-            dataReader->readInformation ( filesPaths );
+            readSuccessful = dataReader->readInformation ( filesPaths );
         else
-            dataReader->read ( filesPaths );
+            readSuccessful = dataReader->read ( filesPaths );
 
-        dtkData = dataReader->data();
+        if (readSuccessful)
+            dtkData = dataReader->data();
     }
     else
     {

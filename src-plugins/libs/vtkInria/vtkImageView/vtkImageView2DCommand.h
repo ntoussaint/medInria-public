@@ -54,7 +54,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
     CameraMoveEvent,
     CameraZoomEvent,
     CameraPanEvent,
-    DefaultMoveEvent
+    DefaultMoveEvent,
+    RequestedCursorInformationEvent
   };
   //ETX
 
@@ -77,8 +78,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
   vtkImageView2D* Viewer;
   double InitialWindow;
   double InitialLevel;
-  int InitialSlice;
-
 
 };
 

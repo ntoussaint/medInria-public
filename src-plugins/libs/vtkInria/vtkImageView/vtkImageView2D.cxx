@@ -154,7 +154,7 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   if (image)
     image->UpdateInformation();
 
-  if (image->GetScalarType()==VTK_UNSIGNED_CHAR &&
+  if (image && image->GetScalarType()==VTK_UNSIGNED_CHAR &&
       ( image->GetNumberOfScalarComponents()==3 || image->GetNumberOfScalarComponents()==4) )
   {
     this->ImageActor->SetInput( image );
@@ -1377,6 +1377,9 @@ void vtkImageView2D::InstallPipeline()
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command, 10);
 
+    if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::RequestedCursorInformationEvent, this->Command) )
+      this->InteractorStyle->AddObserver (vtkImageView2DCommand::RequestedCursorInformationEvent, this->Command, 10);
+
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command, 10);
 
@@ -1579,18 +1582,24 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 {
   if (image)
     image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
+
   vtkRenderer *renderer = 0;
+
   if (layer==0)
   {
     if (this->GetInput())
     {
       this->RemoveAllLayers();
     }
-    this->GetImage2DDisplayForLayer(0)->SetInput(image);
-    this->Superclass::SetInput (image, matrix, layer);
-    this->GetWindowLevel(0)->SetInput(image);
-    double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
-    this->SetColorRange(range,0);
+
+    if(image)
+    {
+        this->GetImage2DDisplayForLayer(0)->SetInput(image);
+        this->Superclass::SetInput (image, matrix, layer);
+        this->GetWindowLevel(0)->SetInput(image);
+        double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
+        this->SetColorRange(range,0);
+    }
 
     renderer = this->GetRenderer();
   }
@@ -1640,7 +1649,8 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   if (!renderer)
     return;
 
-  renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
+  if ( this->GetImage2DDisplayForLayer(layer) )
+    renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
 
   this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
   this->UpdateDisplayExtent();
@@ -1910,6 +1920,8 @@ void vtkImageView2D::AddLayer(int layer)
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveLayer(int layer)
 {
+  vtkImageView::RemoveLayer(layer);
+
   if (!this->HasLayer(layer))
     return;
 

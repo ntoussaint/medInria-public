@@ -33,26 +33,31 @@ bool undoRedoRegistration::writeTransform(const QString& file){return false;}
 itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform(){return NULL;}
 QString undoRedoRegistration::getTitleAndParameters(){return QString();}
 
-void undoRedoRegistration::undo(){
+void undoRedoRegistration::undo()
+{
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Undo();
     generateOutput();
 }
     
-void undoRedoRegistration::redo(){
+void undoRedoRegistration::redo()
+{
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Redo();
     generateOutput();
 }
 
-void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
+void undoRedoRegistration::setInput(dtkAbstractData *data, int channel)
+{
     itkProcessRegistration::setInput(data,channel);
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
+
     if (channel==0)
         m_factory->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
-    else if (channel==1)
+    else if (channel==1 && this->movingImages().size() > 0)
         m_factory->SetMovingImage((RegImageType*)this->movingImages()[0].GetPointer());
+
     registrationFactory::instance()->reset();
 }
 
@@ -62,7 +67,7 @@ void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * pr
     if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){
         m_factory->Update();
         itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
-        result->DisconnectPipeline();
+        //result->DisconnectPipeline();
         if (algorithm && process)
         { 
             if (process->output())
