@@ -232,8 +232,8 @@ void vtkLandmarkSegmentationController::SetInput(ImageType::Pointer input)
   m_Input = input;
   m_Filter->SetInput (m_Input);
   
-  typename ImageType::DirectionType directions = input->GetDirection();
-  typename ImageType::PointType origin = input->GetOrigin();
+  ImageType::DirectionType directions = input->GetDirection();
+  ImageType::PointType origin = input->GetOrigin();
   vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
   matrix->Identity();
   for (int i=0; i<3; i++)

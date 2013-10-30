@@ -6,6 +6,7 @@
 #include <QObject>
 #include "itkImageRegistrationFactory.h"
 #include "itkTransform.h"
+#include "itkImage.h"
 #include "registrationFactoryExport.h"
 
 

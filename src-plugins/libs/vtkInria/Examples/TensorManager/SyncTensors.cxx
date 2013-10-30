@@ -335,86 +335,13 @@ int main (int argc, char* argv[])
   view3d->SetShowActorY (0);
   view3d->SetShowActorZ (0);
 
-  
-  pool->AddItem (view3d);
-
   vtkTensorVisuManager* tensormanager = vtkTensorVisuManager::New();
   vtkMyCommand* command = vtkMyCommand::New();
   command->View = view3d;
   command->TensorGlyph = tensormanager;
   view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
-  
-  for (int i=0; i<argc - 2; i++)
-  {
-    std::string filename = argv[i+1];
 
-    vtkMetaDataSet* metadataset = manager->ReadFile(filename.c_str());
-    // manager->AddMetaDataSet (metadataset);
-
-    if ( metadataset->GetType() == vtkMetaDataSet::VTK_META_IMAGE_DATA )
-    {
-      vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(metadataset);
-      vtkImageData* image = NULL;
-      vtkMatrix4x4* matrix = NULL;
-
-      if (!metaimage)
-      {
-        metaimage = vtkMetaImageData::SafeDownCast(vtkMetaDataSetSequence::SafeDownCast(metadataset)->GetMetaDataSet(0));
-        image = vtkImageData::SafeDownCast(vtkMetaDataSetSequence::SafeDownCast(metadataset)->GetDataSet());
-      }
-      else
-        image = metaimage->GetImageData();
-
-      command->MetaImage = metaimage;
-      
-      matrix = metaimage->GetOrientationMatrix();
-
-      
-      vtkImageView2D* view = vtkImageView2D::New();
-      vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
-      vtkRenderWindow* rwin = vtkRenderWindow::New();
-      vtkRenderer* ren = vtkRenderer::New();
-      position[0] = 0; position[1] = 0;
-      iren->SetRenderWindow(rwin);
-      rwin->AddRenderer (ren);
-      
-      view->SetRenderWindow(rwin);
-      view->SetRenderer(ren);
-      view->SetPosition (position);
-      view->SetInput (image);
-      view->SetOrientationMatrix(matrix);
-      view->GetCornerAnnotation()->SetText (0, filename.c_str());
-
-      view3d->AddExtraPlane (view->GetImageActor());
-
-      pool->AddItem (view);
-    }
-    else
-    {
-      vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
-      prop->SetColor (0.5,0.5,0.5);
-      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 10000)
-	prop->SetOpacity (0.25);
-      else
-      {
-	prop->SetOpacity (0.60);
-	prop->SetLineWidth (1);
-      }
-	
-      pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop );
-      metadataset->SetScalarVisibility(1);
-    }
-
-  }
-
-  
-  vtkImageView* firstview = pool->GetItem (0);
-
-  if (firstview)
-  {
-    view3d->SetInput (firstview->GetInput());
-    view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
-  }
+  pool->AddItem (view3d);
 
   std::string filename = argv[argc - 1];
 

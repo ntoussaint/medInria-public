@@ -31,7 +31,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkIO
   )
 
-add_executable(SyncTensors
+add_executable(SyncTensors MACOSX_BUNDLE
   SyncTensors.cxx
   )	    
     

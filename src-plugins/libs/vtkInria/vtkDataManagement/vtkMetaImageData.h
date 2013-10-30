@@ -200,6 +200,10 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     /**
        The matrix instance is from now on corrected.
     */
+    /* std::cout << "origin " << v_origin[0] << ", " << v_origin[1] << ", "<< v_origin[2] << std::endl; */
+    /* std::cout << "corrected origin " << v_origin2[0] << ", " << v_origin2[1] << ", "<< v_origin2[2] << std::endl; */
+    /* std::cout << "vtk matrix is " << *matrix << std::endl; */
+    
 #else
     for (int i=0; i<3; i++)
       matrix->SetElement (i, 3, origin[i]);

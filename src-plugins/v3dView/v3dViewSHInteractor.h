@@ -30,6 +30,7 @@ class dtkAbstractView;
  * adding SH handling capabilities like visualization and SH-specific
  * properties.
  */
+
 class V3DVIEWPLUGIN_EXPORT v3dViewSHInteractor: public medSHAbstractViewInteractor
 {
 
